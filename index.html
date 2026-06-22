@@ -108,12 +108,10 @@ select option{background:var(--navy-mid)}
 <body>
 <div id="app"><div class="loading-screen"><div class="logo">🏈 Fearless Fools</div><div><span class="spin">⟳</span> Connecting...</div></div></div>
 
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, onSnapshot, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+<!-- Firebase compat (works on GitHub Pages without module bundler) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
 const firebaseConfig = {
   apiKey: "AIzaSyC9OkeliL9-wxSJ9X-BelORBhCt99vOXLk",
   authDomain: "fools-pickem.firebaseapp.com",
@@ -122,26 +120,25 @@ const firebaseConfig = {
   messagingSenderId: "870552124457",
   appId: "1:870552124457:web:6444cd000cbbf04ac57038"
 };
-
-const fbApp = initializeApp(firebaseConfig);
-const db = getFirestore(fbApp);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // ===================== FIRESTORE HELPERS =====================
 async function fsGet(col, id) {
-  const snap = await getDoc(doc(db, col, id));
-  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+  const snap = await db.collection(col).doc(id).get();
+  return snap.exists ? { id: snap.id, ...snap.data() } : null;
 }
 async function fsSet(col, id, data) {
-  await setDoc(doc(db, col, id), data);
+  await db.collection(col).doc(id).set(data);
 }
 async function fsUpdate(col, id, data) {
-  await updateDoc(doc(db, col, id), data);
+  await db.collection(col).doc(id).update(data);
 }
 async function fsDelete(col, id) {
-  await deleteDoc(doc(db, col, id));
+  await db.collection(col).doc(id).delete();
 }
 async function fsAll(col) {
-  const snap = await getDocs(collection(db, col));
+  const snap = await db.collection(col).get();
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
