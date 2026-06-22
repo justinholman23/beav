@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fearless Fools Football Follies</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+:root {
+  --gold:#F4B942; --gold-dim:#c9922a; --navy:#0D1B2A; --navy-mid:#1A2E44;
+  --navy-light:#243D56; --slate:#2E4A63; --green:#2ECC71; --green-dim:#27ae60;
+  --red:#E74C3C; --red-dim:#c0392b; --text:#E8EDF2; --text-dim:#8AA4BE;
+  --border:#2E4A63; --radius:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
+.topbar{background:var(--navy-mid);border-bottom:2px solid var(--gold);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:1px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-user{font-size:13px;color:var(--text-dim)}
+.topbar-user span{color:var(--text);font-weight:600}
+.main{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{width:200px;background:var(--navy-mid);border-right:1px solid var(--border);padding:16px 0;flex-shrink:0}
+.sidebar-section{padding:8px 16px 4px;font-size:10px;font-weight:700;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:var(--text-dim);font-size:13px;font-weight:500;border-left:3px solid transparent;transition:all .15s}
+.nav-item:hover{background:var(--navy-light);color:var(--text)}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(244,185,66,.07)}
+.content{flex:1;padding:24px;overflow-y:auto}
+.card{background:var(--navy-mid);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);margin-bottom:16px;letter-spacing:.5px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-select{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:9px 12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
+.form-input:focus,.form-select:focus{border-color:var(--gold)}
+.btn{padding:9px 18px;border-radius:6px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+.btn-primary{background:var(--gold);color:var(--navy)}.btn-primary:hover{background:var(--gold-dim)}
+.btn-secondary{background:var(--slate);color:var(--text)}.btn-secondary:hover{background:var(--navy-light)}
+.btn-danger{background:var(--red);color:white}.btn-danger:hover{background:var(--red-dim)}
+.btn-success{background:var(--green);color:var(--navy)}.btn-success:hover{background:var(--green-dim)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.tag-gold{background:rgba(244,185,66,.15);color:var(--gold)}
+.tag-green{background:rgba(46,204,113,.15);color:var(--green)}
+.tag-red{background:rgba(231,76,60,.15);color:var(--red)}
+.tag-blue{background:rgba(52,152,219,.15);color:#3498db}
+.tag-gray{background:var(--navy-light);color:var(--text-dim)}
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{text-align:left;padding:10px 12px;background:var(--navy);color:var(--text-dim);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.data-table td{padding:10px 12px;border-bottom:1px solid rgba(46,74,99,.5);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:rgba(255,255,255,.02)}
+.data-table .num{font-family:'JetBrains Mono',monospace;text-align:right}
+.data-table th.num{text-align:right}
+.game-card{background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.game-card.locked{opacity:.85}
+.conf-badge{width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.conf-badge.low{background:var(--slate);color:var(--text-dim)}
+.conf-select{width:62px;font-size:17px;font-family:'Bebas Neue',sans-serif;background:var(--navy);color:var(--gold);border:2px solid var(--gold);border-radius:6px;padding:5px 2px;text-align:center;cursor:pointer;outline:none;flex-shrink:0}
+.conf-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;text-align:center;margin-bottom:2px}
+.game-matchup{flex:1;min-width:0}
+.game-teams{font-weight:600;font-size:14px}
+.game-pick{font-size:12px;margin-top:3px}
+.game-pick.correct{color:var(--green)}.game-pick.wrong{color:var(--red)}.game-pick.pending{color:var(--text-dim)}
+.team-btn{padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--navy-mid);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.team-btn:hover{border-color:var(--gold);color:var(--gold)}
+.team-btn.selected{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.team-btn.correct{background:rgba(46,204,113,.2);border-color:var(--green);color:var(--green)}
+.team-btn.wrong{background:rgba(231,76,60,.1);border-color:var(--red-dim);color:var(--red)}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--navy)}
+.login-box{width:380px;background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:36px}
+.login-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);text-align:center;line-height:1.1;margin-bottom:8px}
+.login-sub{text-align:center;color:var(--text-dim);font-size:13px;margin-bottom:28px}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text);margin-bottom:20px;letter-spacing:.5px}
+.page-title span{color:var(--gold)}
+.alert{padding:12px 16px;border-radius:6px;margin-bottom:16px;font-size:13px}
+.alert-info{background:rgba(52,152,219,.15);border:1px solid rgba(52,152,219,.3);color:#74b9e8}
+.alert-warn{background:rgba(244,185,66,.15);border:1px solid rgba(244,185,66,.3);color:var(--gold)}
+.alert-success{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.3);color:var(--green)}
+.instructions{background:rgba(244,185,66,.06);border:1px solid rgba(244,185,66,.2);border-radius:6px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--text-dim);line-height:1.6}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.mt-12{margin-top:12px}.mt-8{margin-top:8px}.mb-8{margin-bottom:8px}
+.text-dim{color:var(--text-dim)}.text-gold{color:var(--gold)}.text-green{color:var(--green)}.text-red{color:var(--red)}
+.text-sm{font-size:12px}.bold{font-weight:700}.font-mono{font-family:'JetBrains Mono',monospace}
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.money-pos{color:var(--green);font-family:'JetBrains Mono',monospace}
+.money-neg{color:var(--red);font-family:'JetBrains Mono',monospace}
+.grid-scroll{overflow-x:auto}
+.full-grid{border-collapse:collapse;font-size:12px;min-width:900px}
+.full-grid th,.full-grid td{border:1px solid var(--border);padding:7px 10px;text-align:center;white-space:nowrap}
+.full-grid th{background:var(--navy);color:var(--text-dim);font-size:10px;text-transform:uppercase;font-weight:700}
+.full-grid td.player-name{text-align:left;font-weight:600;color:var(--text);background:var(--navy-mid);position:sticky;left:0;z-index:1}
+.full-grid td.total-col{font-family:'JetBrains Mono',monospace;font-weight:700;background:rgba(244,185,66,.08);color:var(--gold)}
+.full-grid .pick-cell{font-family:'JetBrains Mono',monospace}
+.full-grid .pick-cell.correct{background:rgba(46,204,113,.15);color:var(--green)}
+.full-grid .pick-cell.wrong{background:rgba(231,76,60,.1);color:var(--red)}
+.full-grid .winner-row td{background:var(--navy);font-size:10px;color:var(--text-dim);border-top:2px solid var(--gold)}
+.full-grid .winner-row td.won{color:var(--green);font-weight:700}
+.spin{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:16px;color:var(--text-dim)}
+.loading-screen .logo{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)}
+select option{background:var(--navy-mid)}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}.sidebar{display:none}}
+</style>
+</head>
+<body>
+<div id="app"><div class="loading-screen"><div class="logo">🏈 Fearless Fools</div><div><span class="spin">⟳</span> Connecting...</div></div></div>
+
+<!-- Firebase 8 compat (stable, works on GitHub Pages) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC9OkeliL9-wxSJ9X-BelORBhCt99vOXLk",
+  authDomain: "fools-pickem.firebaseapp.com",
+  projectId: "fools-pickem",
+  storageBucket: "fools-pickem.firebasestorage.app",
+  messagingSenderId: "870552124457",
+  appId: "1:870552124457:web:6444cd000cbbf04ac57038"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ===================== FIRESTORE HELPERS =====================
+async function fsGet(col, id) {
+  const snap = await db.collection(col).doc(id).get();
+  return snap.exists ? { id: snap.id, ...snap.data() } : null;
+}
+async function fsSet(col, id, data) {
+  await db.collection(col).doc(id).set(data);
+}
+async function fsUpdate(col, id, data) {
+  await db.collection(col).doc(id).update(data);
+}
+async function fsDelete(col, id) {
+  await db.collection(col).doc(id).delete();
+}
+async function fsAll(col) {
+  const snap = await db.collection(col).get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+// ===================== SESSION (localStorage only) =====================
+function currentUser() { try { return JSON.parse(localStorage.getItem('fools_session')); } catch { return null; } }
+function setSession(u) { localStorage.setItem('fools_session', JSON.stringify(u)); }
+function clearSession() { localStorage.removeItem('fools_session'); }
+
+// ===================== CACHE (avoid re-fetching on every render) =====================
+let CACHE = { users: null, weeks: null, picks: null, lateFlags: null };
+async function getUsers() { if (!CACHE.users) CACHE.users = await fsAll('users'); return CACHE.users; }
+async function getWeeks() { if (!CACHE.weeks) CACHE.weeks = await fsAll('weeks'); return CACHE.weeks; }
+async function getPicks() { if (!CACHE.picks) CACHE.picks = await fsAll('picks'); return CACHE.picks; }
+async function getLateFlags() { if (!CACHE.lateFlags) { const d = await fsGet('meta', 'lateFlags'); CACHE.lateFlags = d ? d.flags || {} : {}; } return CACHE.lateFlags; }
+function clearCache() { CACHE = { users: null, weeks: null, picks: null, lateFlags: null }; }
+
+async function getActiveWeek() {
+  const weeks = await getWeeks();
+  return weeks.find(w => w.status === 'open') || weeks.filter(w => w.status !== 'archived').sort((a, b) => b.weekNum - a.weekNum)[0] || null;
+}
+async function getWeek(n) { const weeks = await getWeeks(); return weeks.find(w => w.weekNum === n) || null; }
+async function getPicksForUser(uid, wn) { const picks = await getPicks(); return picks.find(p => p.userId === uid && p.weekNum === wn) || null; }
+
+async function saveUserPicks(uid, wn, picks) {
+  const id = uid + '_w' + wn;
+  await fsSet('picks', id, { userId: uid, weekNum: wn, picks, submitted: new Date().toISOString() });
+  CACHE.picks = null;
+}
+
+// ===================== SCORING =====================
+async function scoreWeek(wn) {
+  const week = await getWeek(wn);
+  if (!week || !week.winners || !Object.keys(week.winners).length) return [];
+  const lateFlags = await getLateFlags();
+  const users = (await getUsers()).filter(u => u.role !== 'commissioner');
+  return Promise.all(users.map(async user => {
+    const entry = await getPicksForUser(user.id, wn);
+    if (!entry) return { userId: user.id, name: user.name, points: 0, wins: 0, losses: 0, submitted: false, late: !!lateFlags[wn + '_' + user.id] };
+    let pts = 0, wins = 0, losses = 0;
+    for (const pick of entry.picks) {
+      const winner = week.winners[pick.gameId];
+      if (!winner) continue;
+      if (pick.team === winner) { pts += pick.points; wins++; } else losses++;
+    }
+    return { userId: user.id, name: user.name, points: pts, wins, losses, submitted: true, late: !!lateFlags[wn + '_' + user.id] };
+  }));
+}
+
+async function calcWeeklyMoney(wn) {
+  const scores = await scoreWeek(wn);
+  if (!scores.length) return [];
+  const maxPts = Math.max(...scores.map(s => s.points));
+  const winnerCount = scores.filter(s => s.points === maxPts && s.submitted).length;
+  const pot = winnerCount > 0 ? 13 / winnerCount : 0;
+  return scores.map(s => {
+    const isWinner = s.points === maxPts && s.submitted;
+    const burn = s.submitted ? Math.min((maxPts - s.points) * 0.20, 7) : 7;
+    const lateFee = s.late ? 1 : 0;
+    const earn = isWinner ? pot : 0;
+    return { ...s, burn, weekFee: 1, lateFee, earn, net: earn - burn - 1 - lateFee, isWinner };
+  });
+}
+
+async function calcSeasonMoney() {
+  const users = (await getUsers()).filter(u => u.role !== 'commissioner');
+  const scored = (await getWeeks()).filter(w => w.status === 'scored');
+  const totals = {};
+  users.forEach(u => { totals[u.id] = { name: u.name, net: 0, totalPoints: 0, wins: 0, losses: 0, weeklyResults: [] }; });
+  for (const week of scored) {
+    const money = await calcWeeklyMoney(week.weekNum);
+    for (const m of money) {
+      if (totals[m.userId]) {
+        totals[m.userId].net += m.net;
+        totals[m.userId].totalPoints += m.points;
+        totals[m.userId].wins += m.wins;
+        totals[m.userId].losses += m.losses;
+        totals[m.userId].weeklyResults.push({ weekNum: week.weekNum, ...m });
+      }
+    }
+  }
+  return Object.values(totals);
+}
+
+async function getPointsStandings() {
+  const users = (await getUsers()).filter(u => u.role !== 'commissioner');
+  const scored = (await getWeeks()).filter(w => w.status === 'scored');
+  return Promise.all(users.map(async u => {
+    let half1 = 0, half2 = 0;
+    for (const w of scored) {
+      const scores = await scoreWeek(w.weekNum);
+      const r = scores.find(s => s.userId === u.id);
+      if (r) { if (w.weekNum <= 9) half1 += r.points; else half2 += r.points; }
+    }
+    return { id: u.id, name: u.name, half1, half2, total: half1 + half2 };
+  }));
+}
+
+function fmt$(n) { return (n >= 0 ? '+' : '') + n.toFixed(2); }
+
+// ===================== ESPN =====================
+async function fetchNFLGames(wn, yr = 2025) {
+  try {
+    const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week=${wn}&dates=${yr}`);
+    const d = await r.json();
+    return (d.events || []).map(e => {
+      const comp = e.competitions[0];
+      const away = comp.competitors.find(t => t.homeAway === 'away');
+      const home = comp.competitors.find(t => t.homeAway === 'home');
+      return { id: e.id, away: away.team.abbreviation, home: home.team.abbreviation };
+    });
+  } catch (e) { return null; }
+}
+function placeholderGames() {
+  const t = ['ARI','ATL','BAL','BUF','CAR','CHI','CIN','CLE','DAL','DEN','DET','GB','HOU','IND','JAC','KC','LAC','LAR','LV','MIA','MIN','NE','NO','NYG','NYJ','PHI','PIT','SEA','SF','TB','TEN','WAS'];
+  return Array.from({ length: 14 }, (_, i) => ({ id: 'g' + i, away: t[i * 2], home: t[i * 2 + 1] }));
+}
+
+// ===================== RENDER ENGINE =====================
+let currentPage = 'picks';
+function setPage(p) { currentPage = p; renderPage(); }
+
+async function render() {
+  const user = currentUser();
+  const app = document.getElementById('app');
+  if (!user) { app.innerHTML = await renderLogin(); bindLogin(); return; }
+  app.innerHTML = renderShell(user);
+  bindNav();
+  await renderPage();
+}
+
+function renderShell(user) {
+  const isComm = user.role === 'commissioner';
+  const navItems = isComm ? [
+    { id: 'comm-week', icon: '🏈', label: 'Manage Week' },
+    { id: 'comm-grid', icon: '📊', label: 'Full Grid' },
+    { id: 'comm-standings', icon: '🏆', label: 'Standings' },
+    { id: 'comm-money', icon: '💰', label: 'Money Tracker' },
+    { id: 'comm-users', icon: '👥', label: 'Manage Players' },
+  ] : [
+    { id: 'picks', icon: '🏈', label: 'Submit Picks' },
+    { id: 'my-history', icon: '📋', label: 'My History' },
+    { id: 'standings', icon: '🏆', label: 'Standings' },
+    { id: 'money', icon: '💰', label: 'Money' },
+    { id: 'grid', icon: '📊', label: 'Full Grid' },
+  ];
+  if (!navItems.find(n => n.id === currentPage)) currentPage = navItems[0].id;
+  return `<div style="display:flex;flex-direction:column;min-height:100vh">
+    <div class="topbar">
+      <div class="topbar-logo">🏈 Fearless Fools Football Follies</div>
+      <div class="topbar-right">
+        <div class="topbar-user">Welcome, <span>${user.name}</span></div>
+        <button class="btn btn-secondary btn-sm" onclick="window._logout()">Sign Out</button>
+      </div>
+    </div>
+    <div class="main">
+      <div class="sidebar">
+        <div class="sidebar-section">${isComm ? 'Commissioner' : 'Player'}</div>
+        ${navItems.map(n => `<div class="nav-item ${currentPage === n.id ? 'active' : ''}" data-page="${n.id}">
+          <span style="font-size:16px;width:18px;text-align:center">${n.icon}</span>${n.label}
+        </div>`).join('')}
+      </div>
+      <div class="content" id="page-content"><div class="loading-screen" style="min-height:200px"><span class="spin">⟳</span></div></div>
+    </div>
+  </div>`;
+}
+
+function bindNav() {
+  document.querySelectorAll('.nav-item[data-page]').forEach(el => {
+    el.addEventListener('click', () => { currentPage = el.dataset.page; renderPage(); });
+  });
+}
+
+async function renderPage() {
+  const pc = document.getElementById('page-content');
+  if (!pc) return;
+  pc.innerHTML = `<div style="padding:40px;text-align:center;color:var(--text-dim)"><span class="spin">⟳</span> Loading...</div>`;
+  const pages = {
+    'picks': renderPicksPage, 'my-history': renderMyHistory, 'standings': renderStandings,
+    'money': renderMoneyPage, 'grid': renderGridPage,
+    'comm-week': renderCommWeek, 'comm-grid': renderGridPage,
+    'comm-standings': renderStandings, 'comm-money': renderMoneyPage, 'comm-users': renderCommUsers,
+  };
+  const fn = pages[currentPage];
+  if (fn) pc.innerHTML = await fn();
+  bindPageEvents();
+}
+
+function bindPageEvents() {
+  // Bound inline via onclick — nothing extra needed
+}
+
+// ===================== LOGIN =====================
+async function renderLogin() {
+  const users = await getUsers();
+  return `<div class="login-wrap"><div class="login-box">
+    <div class="login-title">FEARLESS FOOLS<br>FOOTBALL FOLLIES</div>
+    <div class="login-sub">2025–2026 Season</div>
+    <div id="login-err" class="alert alert-warn" style="display:none"></div>
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <select class="form-select" id="login-name">
+        <option value="">— Select your name —</option>
+        ${users.map(u => `<option value="${u.id}">${u.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="login-pass" placeholder="Enter password"/>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px" id="login-btn" onclick="window._login()">Sign In</button>
+  </div></div>`;
+}
+
+function bindLogin() {
+  document.getElementById('login-pass')?.addEventListener('keydown', e => { if (e.key === 'Enter') window._login(); });
+}
+
+window._login = async function() {
+  const uid = document.getElementById('login-name').value;
+  const pw = document.getElementById('login-pass').value;
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  const users = await getUsers();
+  const u = users.find(u => u.id === uid && u.password === pw);
+  if (u) { setSession(u); await render(); }
+  else {
+    const e = document.getElementById('login-err');
+    e.textContent = 'Incorrect name or password.'; e.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+};
+
+window._logout = function() { clearSession(); clearCache(); render(); };
+
+// ===================== PICKS PAGE =====================
+let PS = { weekNum: null, games: [], teamSel: {}, confVal: {} };
+
+async function renderPicksPage() {
+  const user = currentUser();
+  const week = await getActiveWeek();
+  if (!week) return `<div class="page-title">Submit <span>Picks</span></div><div class="alert alert-info">No active week yet. Check back soon!</div>`;
+  const locked = week.status === 'locked' || week.status === 'scored';
+  const existing = await getPicksForUser(user.id, week.weekNum);
+
+  if (PS.weekNum !== week.weekNum) {
+    PS.weekNum = week.weekNum; PS.games = week.games || [];
+    PS.teamSel = {}; PS.confVal = {};
+    PS.games.forEach((g, i) => { PS.confVal[g.id] = 16 - i; });
+    if (existing) existing.picks.forEach(p => { PS.teamSel[p.gameId] = p.team; PS.confVal[p.gameId] = p.points; });
+  }
+
+  const lateFlags = await getLateFlags();
+  const isLate = lateFlags[week.weekNum + '_' + user.id];
+
+  return `<div class="flex-between mb-8">
+    <div class="page-title">Week <span>${week.weekNum}</span> Picks</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      ${locked ? '<span class="tag tag-red">LOCKED</span>' : '<span class="tag tag-green">OPEN</span>'}
+      ${existing ? '<span class="tag tag-gold">SUBMITTED</span>' : ''}
+      ${isLate ? '<span class="tag tag-red">LATE FEE</span>' : ''}
+    </div>
+  </div>
+  ${!locked ? `<div class="instructions">
+    <strong>How to pick:</strong> Click the team you think will win, then use the <strong>Conf</strong> dropdown to assign confidence points 1–16. Each number must be used exactly once — 16 = most confident, 1 = least confident.
+  </div>` : '<div class="instructions">Picks are locked for this week.</div>'}
+  <div id="picks-list">${buildGameCards(week, locked)}</div>
+  ${!locked ? `<div style="margin-top:16px;display:flex;gap:12px;align-items:center">
+    <button class="btn btn-primary" onclick="window._submitPicks()">${existing ? 'Update Picks' : 'Submit Picks'}</button>
+    <div id="picks-msg" class="text-sm text-dim"></div>
+  </div>` : ''}`;
+}
+
+function buildGameCards(week, locked) {
+  return PS.games.map((game, idx) => {
+    const sel = PS.teamSel[game.id] || '';
+    const conf = PS.confVal[game.id] || (16 - idx);
+    const winner = week.winners ? week.winners[game.id] : null;
+    const scored = week.status === 'scored' && winner;
+    const correct = scored && sel === winner;
+    const wrong = scored && sel && sel !== winner;
+    const opts = Array.from({ length: 16 }, (_, i) => { const v = 16 - i; return `<option value="${v}"${conf === v ? ' selected' : ''}>${v}</option>`; }).join('');
+    const confCtrl = locked
+      ? `<div class="conf-badge${conf <= 4 ? ' low' : ''}">${conf}</div>`
+      : `<div><div class="conf-label">Conf</div><select class="conf-select" onchange="window._setConf('${game.id}',this.value)">${opts}</select></div>`;
+    const awayClass = sel === game.away ? (correct && sel === game.away ? 'correct' : wrong && sel === game.away ? 'wrong' : 'selected') : '';
+    const homeClass = sel === game.home ? (correct && sel === game.home ? 'correct' : wrong && sel === game.home ? 'wrong' : 'selected') : '';
+    return `<div class="game-card${locked ? ' locked' : ''}">
+      ${confCtrl}
+      <div class="game-matchup">
+        <div class="game-teams">${game.away} @ ${game.home}</div>
+        ${scored
+          ? `<div class="game-pick ${correct ? 'correct' : wrong ? 'wrong' : 'pending'}">${correct ? '✓ ' + sel + ' (+' + conf + ' pts)' : wrong ? '✗ ' + sel + ' (winner: ' + winner + ')' : '— (winner: ' + winner + ')'}</div>`
+          : sel ? `<div class="game-pick pending">Pick: ${sel}</div>` : `<div class="game-pick pending text-dim">No team selected</div>`}
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0">
+        <button class="team-btn ${awayClass}"${locked ? ' disabled' : ''} onclick="window._pickTeam('${game.id}','${game.away}')">${game.away}</button>
+        <button class="team-btn ${homeClass}"${locked ? ' disabled' : ''} onclick="window._pickTeam('${game.id}','${game.home}')">${game.home}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window._pickTeam = function(gameId, team) {
+  PS.teamSel[gameId] = team;
+  getActiveWeek().then(week => { document.getElementById('picks-list').innerHTML = buildGameCards(week, false); });
+};
+window._setConf = function(gameId, val) { PS.confVal[gameId] = parseInt(val); };
+
+window._submitPicks = async function() {
+  const week = await getActiveWeek();
+  const unsel = PS.games.filter(g => !PS.teamSel[g.id]);
+  if (unsel.length) { document.getElementById('picks-msg').innerHTML = '<span class="text-red">⚠ Pick a team for every game first.</span>'; return; }
+  const vals = PS.games.map(g => PS.confVal[g.id] || 1);
+  if (new Set(vals).size !== vals.length) { document.getElementById('picks-msg').innerHTML = '<span class="text-red">⚠ Confidence values must all be unique (1–16).</span>'; return; }
+  const picks = PS.games.map(g => ({ gameId: g.id, team: PS.teamSel[g.id], points: PS.confVal[g.id] || 1 }));
+  const btn = document.querySelector('#picks-msg');
+  document.getElementById('picks-msg').innerHTML = '<span class="spin">⟳</span> Saving...';
+  await saveUserPicks(currentUser().id, week.weekNum, picks);
+  document.getElementById('picks-msg').innerHTML = '<span class="text-green">✓ Picks saved!</span>';
+  setTimeout(() => { clearCache(); render(); }, 1000);
+};
+
+// ===================== MY HISTORY =====================
+async function renderMyHistory() {
+  const user = currentUser();
+  const weeks = (await getWeeks()).filter(w => w.status === 'scored').sort((a, b) => b.weekNum - a.weekNum);
+  if (!weeks.length) return `<div class="page-title">My <span>History</span></div><div class="alert alert-info">No scored weeks yet.</div>`;
+  let html = `<div class="page-title">My <span>History</span></div>`;
+  for (const week of weeks) {
+    const entry = await getPicksForUser(user.id, week.weekNum);
+    const scores = await scoreWeek(week.weekNum);
+    const myScore = scores.find(s => s.userId === user.id);
+    const money = await calcWeeklyMoney(week.weekNum);
+    const myMoney = money.find(m => m.userId === user.id);
+    if (!entry || !myScore) continue;
+    const sorted = [...entry.picks].sort((a, b) => b.points - a.points);
+    html += `<div class="card">
+      <div class="flex-between">
+        <div class="card-title" style="margin-bottom:0">Week ${week.weekNum}</div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span class="font-mono text-gold bold">${myScore.points} pts</span>
+          <span class="font-mono ${myMoney && myMoney.net >= 0 ? 'money-pos' : 'money-neg'}">${myMoney ? fmt$(myMoney.net) : '—'}</span>
+          <span class="tag ${myScore.wins > myScore.losses ? 'tag-green' : 'tag-red'}">${myScore.wins}W / ${myScore.losses}L</span>
+        </div>
+      </div>
+      <div class="mt-12" style="display:flex;flex-wrap:wrap;gap:6px">
+        ${sorted.map(p => { const w = week.winners[p.gameId]; return `<span class="tag ${w && p.team === w ? 'tag-green' : w && p.team !== w ? 'tag-red' : 'tag-gray'}">${p.team} (${p.points})</span>`; }).join('')}
+      </div>
+    </div>`;
+  }
+  return html;
+}
+
+// ===================== STANDINGS =====================
+async function renderStandings() {
+  const pts = (await getPointsStandings()).sort((a, b) => b.total - a.total);
+  const season = await calcSeasonMoney();
+  const wl = [...season].sort((a, b) => (b.wins / (b.wins + b.losses || 1)) - (a.wins / (a.wins + a.losses || 1)) || b.wins - a.wins);
+  return `<div class="page-title">Season <span>Standings</span></div>
+  <div class="two-col">
+    <div><div class="card">
+      <div class="card-title">Points Contest</div>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Fool</th><th class="num">Wks 1–9</th><th class="num">Wks 10–18</th><th class="num">Total</th></tr></thead>
+        <tbody>${pts.map((p, i) => `<tr><td>${i + 1}</td><td class="bold">${p.name}</td>
+          <td class="num font-mono">${p.half1}</td><td class="num font-mono">${p.half2}</td>
+          <td class="num font-mono text-gold bold">${p.total}</td></tr>`).join('')}</tbody>
+      </table>
+    </div></div>
+    <div><div class="card">
+      <div class="card-title">Win / Loss Contest</div>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Fool</th><th class="num">W</th><th class="num">L</th><th class="num">Win%</th></tr></thead>
+        <tbody>${wl.map((p, i) => { const tot = p.wins + p.losses; return `<tr><td>${i + 1}</td><td class="bold">${p.name}</td>
+          <td class="num font-mono text-green">${p.wins}</td><td class="num font-mono text-red">${p.losses}</td>
+          <td class="num font-mono">${tot > 0 ? ((p.wins / tot) * 100).toFixed(1) + '%' : '—'}</td></tr>`; }).join('')}</tbody>
+      </table>
+    </div></div>
+  </div>`;
+}
+
+// ===================== MONEY =====================
+async function renderMoneyPage() {
+  const season = (await calcSeasonMoney()).sort((a, b) => b.net - a.net);
+  const scored = (await getWeeks()).filter(w => w.status === 'scored').sort((a, b) => b.weekNum - a.weekNum);
+  let html = `<div class="page-title">Money <span>Tracker</span></div>
+  <div class="card"><div class="card-title">Season Net</div>
+  <table class="data-table">
+    <thead><tr><th>#</th><th>Fool</th><th class="num">Pts</th><th class="num">Earns</th><th class="num">Burns</th><th class="num">Fees</th><th class="num">Net</th></tr></thead>
+    <tbody>${season.map((p, i) => {
+      const earns = p.weeklyResults.reduce((s, r) => s + r.earn, 0);
+      const burns = p.weeklyResults.reduce((s, r) => s + r.burn, 0);
+      const fees = p.weeklyResults.reduce((s, r) => s + r.weekFee + r.lateFee, 0);
+      return `<tr><td>${i + 1}</td><td class="bold">${p.name}</td>
+        <td class="num font-mono">${p.totalPoints}</td>
+        <td class="num money-pos">+${earns.toFixed(2)}</td>
+        <td class="num money-neg">-${burns.toFixed(2)}</td>
+        <td class="num money-neg">-${fees.toFixed(2)}</td>
+        <td class="num bold ${p.net >= 0 ? 'money-pos' : 'money-neg'}">${fmt$(p.net)}</td></tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+  for (const week of scored.slice(0, 5)) {
+    const money = (await calcWeeklyMoney(week.weekNum)).sort((a, b) => b.points - a.points);
+    html += `<div class="card"><div class="card-title">Week ${week.weekNum}</div>
+      <table class="data-table">
+        <thead><tr><th>Fool</th><th class="num">Pts</th><th class="num">Earn</th><th class="num">Burn</th><th class="num">Fee</th><th class="num">Net</th></tr></thead>
+        <tbody>${money.map(m => `<tr>
+          <td>${m.isWinner ? '🏆 ' : ''}<span class="${m.isWinner ? 'bold text-gold' : ''}">${m.name}</span>${m.late ? ' <span class="tag tag-red">LATE</span>' : ''}</td>
+          <td class="num font-mono">${m.points}</td>
+          <td class="num ${m.earn > 0 ? 'money-pos' : 'text-dim'}">${m.earn > 0 ? '+' + m.earn.toFixed(2) : '—'}</td>
+          <td class="num money-neg">-${m.burn.toFixed(2)}</td>
+          <td class="num money-neg">-${(m.weekFee + m.lateFee).toFixed(2)}</td>
+          <td class="num bold ${m.net >= 0 ? 'money-pos' : 'money-neg'}">${fmt$(m.net)}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`;
+  }
+  return html;
+}
+
+// ===================== FULL GRID =====================
+let gridWeekNum = null;
+async function renderGridPage() {
+  const allWeeks = (await getWeeks()).sort((a, b) => b.weekNum - a.weekNum);
+  const week = allWeeks.find(w => w.weekNum === (gridWeekNum || (await getActiveWeek())?.weekNum)) || allWeeks[0];
+  if (!week) return `<div class="page-title">Full <span>Grid</span></div><div class="alert alert-info">No weeks yet.</div>`;
+  gridWeekNum = week.weekNum;
+  const games = week.games || [];
+  const users = (await getUsers()).filter(u => u.role !== 'commissioner');
+  const scores = await scoreWeek(week.weekNum);
+  const viewer = currentUser();
+  const isComm = viewer.role === 'commissioner';
+  const picksVisible = isComm || week.status === 'locked' || week.status === 'scored';
+
+  return `<div class="page-title">Full <span>Grid</span></div>
+  ${!picksVisible ? `<div class="alert alert-warn">🔒 Other players' picks are hidden until the Commissioner locks the week.</div>` : ''}
+  <div class="card" style="margin-bottom:12px">
+    <label class="form-label">Select Week</label>
+    <select class="form-select" style="max-width:200px" onchange="window._switchGridWeek(parseInt(this.value))">
+      ${allWeeks.map(w => `<option value="${w.weekNum}"${w.weekNum === week.weekNum ? ' selected' : ''}>Week ${w.weekNum}</option>`).join('')}
+    </select>
+  </div>
+  <div class="card grid-scroll">
+    <table class="full-grid">
+      <thead><tr><th>Fool</th>${games.map(g => `<th>${g.away}<br>@${g.home}</th>`).join('')}<th>Total</th></tr></thead>
+      <tbody>
+        ${(await Promise.all(users.map(async u => {
+          const entry = await getPicksForUser(u.id, week.weekNum);
+          const sc = scores.find(s => s.userId === u.id);
+          const isMe = u.id === viewer.id;
+          const canSee = picksVisible || isMe;
+          return `<tr><td class="player-name">${u.name}${!picksVisible && isMe ? ' <span class="tag tag-gold" style="font-size:9px">YOU</span>' : ''}</td>
+            ${games.map(g => {
+              if (!canSee) return `<td style="color:var(--border);font-size:16px">🔒</td>`;
+              if (!entry) return `<td>—</td>`;
+              const pick = entry.picks.find(p => p.gameId === g.id);
+              if (!pick) return `<td>—</td>`;
+              const w = week.winners?.[g.id];
+              const ok = w && pick.team === w, bad = w && pick.team !== w;
+              return `<td class="pick-cell${ok ? ' correct' : bad ? ' wrong' : ''}">${pick.team}<br><small>${pick.points}</small></td>`;
+            }).join('')}
+            <td class="total-col">${canSee && sc ? sc.points : '—'}</td>
+          </tr>`;
+        }))).join('')}
+        <tr class="winner-row"><td>WINNER</td>
+          ${games.map(g => `<td class="${week.winners?.[g.id] ? 'won' : ''}">${week.winners?.[g.id] || '—'}</td>`).join('')}
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>`;
+}
+window._switchGridWeek = async function(wn) {
+  gridWeekNum = wn;
+  document.getElementById('page-content').innerHTML = await renderGridPage();
+};
+
+// ===================== COMMISSIONER — WEEK =====================
+async function renderCommWeek() {
+  const allWeeks = (await getWeeks()).sort((a, b) => b.weekNum - a.weekNum);
+  const activeWeek = await getActiveWeek();
+  const users = (await getUsers()).filter(u => u.role !== 'commissioner');
+  const picks = await getPicks();
+  const lateFlags = await getLateFlags();
+
+  return `<div class="page-title">Manage <span>Week</span></div>
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div class="card-title">Open New Week</div>
+        <div class="form-group"><label class="form-label">NFL Week #</label><input class="form-input" type="number" id="nw-num" min="1" max="18" value="${(activeWeek?.weekNum || 0) + 1}"/></div>
+        <div class="form-group"><label class="form-label">Season Year</label><input class="form-input" type="number" id="nw-year" value="2025"/></div>
+        <button class="btn btn-primary" id="fetch-btn" onclick="window._fetchWeek()">📡 Fetch from ESPN & Open Week</button>
+        <div id="fetch-status" class="mt-8 text-sm text-dim"></div>
+      </div>
+
+      ${activeWeek ? `<div class="card">
+        <div class="card-title">Week ${activeWeek.weekNum} — ${activeWeek.status.toUpperCase()}</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+          ${activeWeek.status === 'open' ? `<button class="btn btn-secondary" onclick="window._lockWeek(${activeWeek.weekNum})">🔒 Lock Picks</button>` : ''}
+          ${activeWeek.status === 'locked' ? `<button class="btn btn-secondary" onclick="window._unlockWeek(${activeWeek.weekNum})">🔓 Unlock Picks</button>` : ''}
+        </div>
+
+        ${activeWeek.status === 'locked' || activeWeek.status === 'open' ? `
+        <div class="card-title" style="font-size:15px">Enter Game Winners</div>
+        <div id="winner-entry">${buildWinnerEntry(activeWeek)}</div>
+        <button class="btn btn-success mt-12" onclick="window._scoreWeek(${activeWeek.weekNum})">✅ Score Week & Publish</button>` : ''}
+
+        ${activeWeek.status === 'scored' ? `
+        <div class="card-title" style="font-size:15px">Late Fees</div>
+        ${users.map(u => {
+          const key = activeWeek.weekNum + '_' + u.id;
+          const isLate = !!lateFlags[key];
+          return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <span style="width:160px">${u.name}</span>
+            <button class="btn btn-sm ${isLate ? 'btn-danger' : 'btn-secondary'}" onclick="window._toggleLate(${activeWeek.weekNum},'${u.id}')">
+              ${isLate ? '🚨 Late Fee Applied' : 'Mark Late'}
+            </button>
+          </div>`;
+        }).join('')}` : ''}
+
+        <div class="divider"></div>
+        <div class="card-title" style="font-size:15px">✏️ Edit Player Picks</div>
+        <div class="form-group">
+          <label class="form-label">Select Player</label>
+          <select class="form-select" id="ep-player" onchange="window._loadEditPicks(${activeWeek.weekNum})">
+            <option value="">— Choose a player —</option>
+            ${users.map(u => `<option value="${u.id}">${u.name}</option>`).join('')}
+          </select>
+        </div>
+        <div id="ep-panel"></div>
+      </div>` : ''}
+    </div>
+
+    <div><div class="card">
+      <div class="card-title">All Weeks</div>
+      ${!allWeeks.length ? '<div class="text-dim">No weeks yet.</div>' : `
+      <table class="data-table">
+        <thead><tr><th>Week</th><th>Games</th><th>Status</th><th>Submissions</th></tr></thead>
+        <tbody>${allWeeks.map(w => {
+          const subs = picks.filter(p => p.weekNum === w.weekNum).length;
+          return `<tr><td class="bold">Week ${w.weekNum}</td><td>${(w.games || []).length}</td>
+            <td><span class="tag ${w.status === 'open' ? 'tag-green' : w.status === 'scored' ? 'tag-blue' : 'tag-gray'}">${w.status.toUpperCase()}</span></td>
+            <td class="font-mono">${subs}/${users.length}</td></tr>`;
+        }).join('')}</tbody>
+      </table>`}
+    </div></div>
+  </div>`;
+}
+
+function buildWinnerEntry(week) {
+  return (week.games || []).map(g => {
+    const w = week.winners?.[g.id];
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span style="width:130px;font-size:13px">${g.away} @ ${g.home}</span>
+      <button class="team-btn btn-sm ${w === g.away ? 'selected' : ''}" onclick="window._setWinner('${week.weekNum}','${g.id}','${g.away}')">${g.away}</button>
+      <button class="team-btn btn-sm ${w === g.home ? 'selected' : ''}" onclick="window._setWinner('${week.weekNum}','${g.id}','${g.home}')">${g.home}</button>
+      ${w ? `<span class="tag tag-green">✓ ${w}</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+window._fetchWeek = async function() {
+  const wn = parseInt(document.getElementById('nw-num').value);
+  const yr = parseInt(document.getElementById('nw-year').value);
+  const status = document.getElementById('fetch-status');
+  const btn = document.getElementById('fetch-btn');
+  btn.disabled = true; status.innerHTML = '<span class="spin">⟳</span> Fetching from ESPN...';
+  let games = await fetchNFLGames(wn, yr);
+  if (!games || !games.length) { status.innerHTML = '⚠ ESPN fetch failed — using placeholder games.'; games = placeholderGames(); }
+  else status.innerHTML = `✓ Got ${games.length} games for Week ${wn}.`;
+  await fsSet('weeks', 'w' + wn, { weekNum: wn, games, status: 'open', winners: {} });
+  clearCache(); PS = { weekNum: null, games: [], teamSel: {}, confVal: {} };
+  btn.disabled = false; setTimeout(() => { clearCache(); render(); }, 600);
+};
+
+window._setWinner = async function(wn, gameId, team) {
+  const week = await getWeek(parseInt(wn));
+  if (!week) return;
+  const winners = { ...week.winners, [gameId]: team };
+  await fsUpdate('weeks', 'w' + wn, { winners });
+  CACHE.weeks = null;
+  const updated = await getWeek(parseInt(wn));
+  const el = document.getElementById('winner-entry');
+  if (el) el.innerHTML = buildWinnerEntry(updated);
+};
+
+window._lockWeek = async function(wn) {
+  await fsUpdate('weeks', 'w' + wn, { status: 'locked' });
+  clearCache(); render();
+};
+window._unlockWeek = async function(wn) {
+  await fsUpdate('weeks', 'w' + wn, { status: 'open' });
+  clearCache(); render();
+};
+window._scoreWeek = async function(wn) {
+  const week = await getWeek(wn);
+  const unscored = (week.games || []).filter(g => !week.winners?.[g.id]).length;
+  if (unscored > 0 && !confirm(unscored + ' games have no winner. Score anyway?')) return;
+  await fsUpdate('weeks', 'w' + wn, { status: 'scored' });
+  clearCache(); alert('Week ' + wn + ' scored! Results are now live.'); render();
+};
+window._toggleLate = async function(wn, uid) {
+  const lf = await getLateFlags();
+  const key = wn + '_' + uid;
+  lf[key] = !lf[key];
+  await fsSet('meta', 'lateFlags', { flags: lf });
+  CACHE.lateFlags = null; clearCache(); render();
+};
+
+// ===================== EDIT PLAYER PICKS =====================
+let epSel = {};
+window._loadEditPicks = async function(wn) {
+  const uid = document.getElementById('ep-player')?.value;
+  const panel = document.getElementById('ep-panel');
+  if (!panel) return;
+  if (!uid) { panel.innerHTML = ''; return; }
+  panel.innerHTML = '<div class="text-dim text-sm"><span class="spin">⟳</span> Loading...</div>';
+  const week = await getWeek(wn);
+  const games = week?.games || [];
+  const entry = await getPicksForUser(uid, wn);
+  const users = await getUsers();
+  const userName = users.find(u => u.id === uid)?.name || uid;
+  epSel = {};
+  const picksMap = {};
+  if (entry) entry.picks.forEach(p => { picksMap[p.gameId] = { team: p.team, points: p.points }; epSel[p.gameId] = p.team; });
+  panel.innerHTML = `<div class="alert alert-warn" style="margin-bottom:12px">Editing: <strong>${userName}</strong></div>
+  <table class="data-table" style="margin-bottom:12px">
+    <thead><tr><th>Conf</th><th>Matchup</th><th>Pick</th></tr></thead>
+    <tbody>${games.map(g => {
+      const cur = picksMap[g.id];
+      const curPts = cur?.points || (16 - games.indexOf(g));
+      const curTeam = cur?.team || '';
+      const opts = Array.from({ length: 16 }, (_, i) => { const v = 16 - i; return `<option value="${v}"${curPts === v ? ' selected' : ''}>${v}</option>`; }).join('');
+      return `<tr>
+        <td><select id="ep-pts-${g.id}" style="width:58px;font-size:15px;font-family:'Bebas Neue',sans-serif;background:var(--navy);color:var(--gold);border:2px solid var(--gold);border-radius:6px;padding:4px 2px;text-align:center;outline:none">${opts}</select></td>
+        <td style="font-weight:600">${g.away} @ ${g.home}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="team-btn btn-sm ${curTeam === g.away ? 'selected' : ''}" id="ep-a-${g.id}" onclick="window._epPick('${g.id}','${g.away}','${g.home}')">${g.away}</button>
+          <button class="team-btn btn-sm ${curTeam === g.home ? 'selected' : ''}" id="ep-h-${g.id}" onclick="window._epPick('${g.id}','${g.home}','${g.away}')">${g.home}</button>
+        </div></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="btn btn-primary" onclick="window._saveEP(${wn},'${uid}')">💾 Save Picks</button>
+    <div id="ep-msg" class="text-sm"></div>
+  </div>`;
+};
+
+window._epPick = function(gameId, chosen) {
+  epSel[gameId] = chosen;
+  document.querySelectorAll(`[id^="ep-a-${gameId}"], [id^="ep-h-${gameId}"]`).forEach(btn => {
+    btn.className = 'team-btn btn-sm ' + (btn.textContent === chosen ? 'selected' : '');
+  });
+};
+
+window._saveEP = async function(wn, uid) {
+  const week = await getWeek(wn);
+  const games = week?.games || [];
+  const picks = games.map(g => ({ gameId: g.id, team: epSel[g.id] || '', points: parseInt(document.getElementById('ep-pts-' + g.id)?.value || 1) }));
+  const pts = picks.map(p => p.points);
+  if (new Set(pts).size !== pts.length) { document.getElementById('ep-msg').innerHTML = '<span class="text-red">⚠ Confidence values must be unique.</span>'; return; }
+  if (picks.some(p => !p.team)) { document.getElementById('ep-msg').innerHTML = '<span class="text-red">⚠ All games need a pick.</span>'; return; }
+  document.getElementById('ep-msg').innerHTML = '<span class="spin">⟳</span> Saving...';
+  await saveUserPicks(uid, wn, picks);
+  document.getElementById('ep-msg').innerHTML = '<span class="text-green">✓ Saved!</span>';
+  setTimeout(() => { const el = document.getElementById('ep-msg'); if (el) el.innerHTML = ''; }, 2000);
+};
+
+// ===================== MANAGE USERS =====================
+async function renderCommUsers() {
+  const users = await getUsers();
+  return `<div class="page-title">Manage <span>Players</span></div>
+  <div class="two-col">
+    <div><div class="card">
+      <div class="card-title">Add Player</div>
+      <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="nu-name" placeholder="Fool's name"/></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="nu-pass" placeholder="Temporary password"/></div>
+      <button class="btn btn-primary" onclick="window._addUser()">Add Player</button>
+      <div id="add-msg" class="mt-8 text-sm"></div>
+    </div></div>
+    <div><div class="card">
+      <div class="card-title">Players (${users.filter(u => u.role !== 'commissioner').length} Fools)</div>
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>Role</th><th>Password</th><th></th></tr></thead>
+        <tbody>${users.map(u => `<tr>
+          <td class="bold">${u.name}</td>
+          <td><span class="tag ${u.role === 'commissioner' ? 'tag-gold' : 'tag-blue'}">${u.role}</span></td>
+          <td class="font-mono text-sm text-dim">${u.password}</td>
+          <td>${u.role !== 'commissioner' ? `<button class="btn btn-danger btn-sm" onclick="window._removeUser('${u.id}')">Remove</button>` : '—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div></div>
+  </div>`;
+}
+
+window._addUser = async function() {
+  const name = document.getElementById('nu-name').value.trim();
+  const pass = document.getElementById('nu-pass').value.trim();
+  const msg = document.getElementById('add-msg');
+  if (!name || !pass) { msg.innerHTML = '<span class="text-red">Name and password required.</span>'; return; }
+  const users = await getUsers();
+  if (users.find(u => u.name === name)) { msg.innerHTML = '<span class="text-red">Name already taken.</span>'; return; }
+  const id = 'u' + Date.now();
+  await fsSet('users', id, { id, name, password: pass, role: 'player' });
+  msg.innerHTML = `<span class="text-green">✓ ${name} added!</span>`;
+  clearCache(); setTimeout(() => render(), 800);
+};
+
+window._removeUser = async function(id) {
+  if (!confirm('Remove this player?')) return;
+  await fsDelete('users', id);
+  clearCache(); render();
+};
+
+// ===================== INIT =====================
+// Seed commissioner account if it doesn't exist
+async function seedCommissioner() {
+  const existing = await fsGet('users', 'u0');
+  if (!existing) {
+    await fsSet('users', 'u0', { id: 'u0', name: 'Commissioner', password: 'commish123', role: 'commissioner' });
+  }
+}
+
+seedCommissioner().then(() => { clearCache(); render(); });
+</script>
+</body>
+</html>
